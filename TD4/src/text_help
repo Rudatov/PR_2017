@@ -1,0 +1,48 @@
+//thread_create.c
+
+
+
+/*
+create -> lancer thread 
+	a faire "foo" une fonction 
+	void * foo(void * arg)
+
+
+recuperer mes arguments dans foo
+	-> cast en dur 
+		arg_t * argtype =(arg_t*) org;
+exo 1 : arg_t = int
+
+
+recup valeur sortie du thread
+res_t* pres = (res_t*) malloc(sizeof(res_t*)); // ici res_t = int
+le thread fait : pthread_exit(pres)
+
+le pere fait join -> join(void** pt_res)
+ res_t *pres 
+ join &pres
+ (*pres).x => pres->x
+ printf(pres->count)
+ 	(*pres = si pas de struct)
+free (pres)
+
+
+
+
+*/
+
+
+//serveur_maj.c
+
+/*
+mkfifo ("pwd/fifo_name",...)
+creer fichier tube
+open (RDONLY) read 
+open (WRITE) write
+
+
+
+
+
+*/
+

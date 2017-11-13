@@ -1,0 +1,130 @@
+TD 5
+
+thread détaché -> pas de join possible
+	-detachement à posteriori (exo 1)
+	-detachemenachement à l'initialisation ->pthread_attr_t (exo 2)
+
+
+exo 3 : barrière pour N processus
+lire le N dans les args + le passer aux threads(pthread_create(...,args))
+ 
+wait_barrier (int N)
+	peut-être bloquant 
+	quand N processus bloqués, débloquer tous
+
+	-> compteur partagé de thread bloqué
+		-> protection mutex
+
+	-> Introduire un condition cond : si compteur <N -> wait(cond)
+										sinon 
+											broadcast(cond)
+
+	varglob : mutex m 
+				int cpt
+				condition cond
+	wait(int N){
+		lock(m)
+		cpt++
+		if(cpt<N){
+			wait(cond) {unlock (m); endormissement jusqu'a signal de reveil  ; lock(m); }
+		}else{
+			//cpt == N
+			broadcast(cond)
+
+		}
+		unlock(m)
+	}
+
+
+
+TME 5
+
+fonction transformer fournie : int upper (char* filename)
+
+Exo & :
+ pour 0<i<argc
+ 	-créer un thread 
+ 	- le thread i execute upper(args[i])
+
+ 	problème : passer les args aux threads
+ 	main{
+ 	for i <argc
+ 		thread_i : pthread_create(&tid,NULL,body, args[i])
+ 	}
+ 	body(void* args){
+ 		char* filename = (char*) args;
+ 		int ret = upper()
+ 		if(0!=ret){
+ 			p_ret = malloc sizeof int //free dans le join  
+ 			*p_ret = ret
+ 			 pthread_exit(&ret);
+
+ 		}
+ 	}
+
+
+for (0<i<argc){
+	int* res;
+	pthread_join(tid[i], &res)
+	//addresse d'un endroit ou ecrire un pointeur void **
+}
+
+
+
+
+
+Exo 2 :
+Max N threads -> args[1]
+K fichier > N argv [2..argc-1]
+file de travail partagé
+
+
+globales :mutex , compteur, argc , argv
+
+body{
+	while (1){
+	lock m 
+	if compteur <argc-1
+		int cible pos++
+		unlock m 
+		upper (argv[cible]) -> si erreur pthread_exit
+		}else{
+		unlock m 
+		pthread_exit
+		}
+
+	}
+
+
+}
+
+exo pile
+
+pop -> retour stack[_st_size]
+psuh(val) -> stack[st_size++] = val
+
+globales
+	char[MAXSZ] stack
+	int st_size
+	mutex m
+	codn estVide (sont bloqué sur cette cond tout thread qui a po une pile vide)
+	cond estPleine (bloque kes post sur pile pleine)
+
+
+
+
+char pop()
+	mutex lock  m 
+	while(st_size == 0){
+		pthread_cond_wait(estVide, m )
+	}
+	//reveiller push endormie sur pile pleine
+	if(st_size==MAX-1){
+	broadcast(estPleine)
+	}
+	st_size--;
+	char c = stack[st_size]
+	mutex_unlock m
+	return c
+
+
